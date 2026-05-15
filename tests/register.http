@@ -1,0 +1,30 @@
+### GET request to example server
+GET http://localhost:3000/users
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFsa2FuZHJhbmFAZ21haWwuY29tIiwiaWF0IjoxNzc4ODY1NDQ0LCJleHAiOjE3Nzg4NjU3NDR9.snHpHPCWCjQIZM5nq2gjogUcbjnqAKpsx7xxqtlIBmk
+
+### POST request to register
+POST http://localhost:3000/register
+Content-Type: application/json
+
+{
+  "username": "alkandrana@gmail.com",
+  "password": "W2lim1lak1th"
+}
+
+### POST request to login
+POST http://localhost:3000/auth
+Content-Type: application/json
+
+{
+  "username": "alkandrana@gmail.com",
+  "password": "W2lim1lak1th"
+}
+
+### GET request to refresh token
+GET http://localhost:3000/refresh
+Accept: application/json
+
+### GET request to logout
+GET http://localhost:3000/logout
+Accept: application/json

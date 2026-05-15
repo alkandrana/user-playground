@@ -1,0 +1,9 @@
+# Default ignored files
+**/.idea/
+
+#Node
+**/.env
+**/node_modules/
+**/package-lock.json
+**/*.db
+

@@ -1,0 +1,6 @@
+### GET request to example server
+GET http://localhost:3000/vocab
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFsa2FuZHJhbmFAZ21haWwuY29tIiwiaWF0IjoxNzc4ODY1NDQ0LCJleHAiOjE3Nzg4NjU3NDR9.snHpHPCWCjQIZM5nq2gjogUcbjnqAKpsx7xxqtlIBmk
+
+###
