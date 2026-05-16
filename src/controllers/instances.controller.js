@@ -1,47 +1,42 @@
 import { drizzle } from 'drizzle-orm/libsql';
-import {vocab, languages, usersTable} from "../db/schema.js";
-import { eq, and } from 'drizzle-orm';
+import {vocabInstances, languages, usersTable} from "../db/schema.js";
+import { eq, and, like } from 'drizzle-orm';
 import 'dotenv/config';
 import { getCurrentUser } from "../middleware/verifyJWT.js";
 
 const db = drizzle(process.env.DB_FILE_NAME);
 
-export const getAllVocab = async (req, res) => {
+export const getInstancesByWork = async (req, res) => {
+    // http://localhost:3000/instances/code/VERG AEN
+    const code = req.params.code;
+    const work = await fetch(`http://localhost:3001/code/${code}`);
     const currentUser = await getCurrentUser(req, res);
     console.log("Current user: ", currentUser);
-    const vocabList = await db.select().from(vocab)
-        .where(eq(vocab.userId, currentUser.id));
-    return res.json(vocabList);
-}
-
-export const getByLanguage = async (req, res) => {
-    const languageId = req.params.languageId;
-    const currentUser = await getCurrentUser(req, res);
-    const vocabList = await db.select().from(vocab)
-        .where(and(eq(vocab.languageId, languageId), eq(vocab.userId, currentUser.id)));
-    return res.json(vocabList);
+    const instanceList = await db.select().from(vocabInstances)
+        .where(and(eq(vocabInstances.userId, currentUser.id), like(vocabInstances.citation, "code%")));
+    return res.json(instanceList);
 }
 
 export const getOne = async (req, res) => {
     const id = req.params.id;
-    const [vocabItem] = await db.select().from(vocab).where(eq(vocab.id, id));
+    const [vocabInstance] = await db.select().from(vocabInstances).where(eq(vocabInstances.id, id));
     const currentUser = await getCurrentUser(req, res);
-    if (vocabItem.userId !== currentUser.id){
+    if (vocabInstance.userId !== currentUser.id){
         return res.sendStatus(403);
     }
-    return res.json(vocabItem);
+    return res.json(vocabInstance);
 }
 
 export const create = async (req, res) => {
-    const newVocab = req.body;
-    if (!newVocab?.lemma || !newVocab.definition || !newVocab.languageId || !newVocab.pos) {
+    const newInstance = req.body;
+    if (!newInstance?.instance || !newInstance.form || !newInstance.citation || !newInstance.vocabId) {
         return res.status(400).send({
-            message: "Lemma, definition, languageId and pos are required fields."
+            message: "Instance, form, citation and vocabId are required fields."
         });
     }
     const currentUser = await getCurrentUser(req, res);
-    newVocab.userId = currentUser.id;
-    const response = await db.insert(vocab).values(newVocab);
+    newInstance.userId = currentUser.id;
+    const response = await db.insert(vocabInstances).values(newInstance);
     if (response?.affectedRows > 0){
         return res.status(201).send({
             message: "Vocab successfully created",
@@ -58,37 +53,37 @@ export const update = async (req, res) => {
     const id = req.params.id;
     const data = req.body;
     const currentUser = await getCurrentUser(req, res);
-    const vocabToUpdate = await db.select().from(vocab).where(eq(vocab.id, id));
+    const vocabToUpdate = await db.select().from(vocabInstances).where(eq(vocabInstances.id, id));
     if(vocabToUpdate.userId !== currentUser.id){
         return res.sendStatus(403);
     }
-    const response = await db.update(vocab).set(data).where(eq(vocab.id, id));
+    const response = await db.update(vocabInstances).set(data).where(eq(vocabInstances.id, id));
     if (response.affectedRows > 0){
         return res.status(200).send({
-            message: "Vocab successfully updated",
+            message: "Instance successfully updated",
         });
     } else {
         return res.status(500).send({
             error: "Database Error",
-            message: "There was a problem updating vocab"
+            message: "There was a problem updating instance"
         });
     }
 }
 
-export const deleteVocab = async (req, res) => {
+export const deleteInstance = async (req, res) => {
     const id = req.params.id;
     const currentUser = await getCurrentUser(req, res);
-    const vocabToDelete = await db.select().from(vocab).where(eq(vocab.id, id));
+    const vocabToDelete = await db.select().from(vocabInstances).where(eq(vocabInstances.id, id));
     if (vocabToDelete.userId !== currentUser.id) return res.sendStatus(403);
-    const response = await db.delete(vocab).where(eq(vocab.id, id));
+    const response = await db.delete(vocabInstances).where(eq(vocabInstances.id, id));
     if (response.affectedRows > 0){
         return res.status(200).send({
-            message: "Vocab successfully deleted",
+            message: "Instance successfully deleted",
         });
     } else {
         return res.status(500).send({
             error: "Database Error",
-            message: "There was a problem deleting vocab"
+            message: "There was a problem deleting instance"
         });
     }
 }

@@ -21,6 +21,7 @@ export const vocab = sqliteTable("vocab", {
     lemma: text().notNull().unique(),
     definition: text().notNull(),
     languageId: int('language_id').notNull().references(() => languages.id),
+    userId: int('user_id').references(() => usersTable.id),
     pos: text('part_of_speech').notNull()
 });
 
@@ -32,6 +33,7 @@ export const vocabInstances = sqliteTable("vocab_instances", {
     endIndex: int('end_index'),
     citation: text().notNull().unique(),
     vocabId: int('vocab_id').notNull().references(() => vocab.id),
+    userId: int('user_id').references(() => usersTable.id)
 });
 
 export const comments = sqliteTable("comments", {
@@ -39,5 +41,6 @@ export const comments = sqliteTable("comments", {
     citation: text().notNull().unique(),
     note: text().notNull(),
     startIndex: int('start_index'),
-    endIndex: int('end_index')
+    endIndex: int('end_index'),
+    userId: int('user_id').references(() => usersTable.id),
 });
