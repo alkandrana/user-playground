@@ -6,7 +6,7 @@ export const usersTable = sqliteTable("users_table", {
     username: text().notNull().unique(),
     email: text(),
     password: text().notNull(),
-    createdAt: integer('created_at', {mode: 'timestamp'}).default(sql`(current_timestamp)`),
+    createdAt: text('created_at').default(sql`(current_timestamp)`),
     isActive: integer('is_active', {mode: 'boolean'}).default(true),
     refreshToken: text('refresh_token')
 });
