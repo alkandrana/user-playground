@@ -63,7 +63,7 @@ export const authorize = async (req, res) => {
         const accessToken = await jwt.sign(
             {"username": userMatch.username},
             process.env.ACCESS_TOKEN_SECRET,
-            { expiresIn: '5m'}
+            { expiresIn: '15m'}
         );
         const refreshToken = await jwt.sign(
             { "username": userMatch.username },

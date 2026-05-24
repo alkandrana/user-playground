@@ -20,9 +20,9 @@ export const vocab = sqliteTable("vocab", {
     id: int().primaryKey({ autoIncrement: true }),
     lemma: text().notNull().unique(),
     definition: text().notNull(),
-    languageId: int('language_id').notNull().references(() => languages.id),
-    userId: int('user_id').references(() => usersTable.id),
-    pos: text('part_of_speech').notNull()
+    languageId: int().notNull().references(() => languages.id),
+    userId: int().references(() => usersTable.id),
+    pos: text().notNull()
 });
 
 export const vocabInstances = sqliteTable("vocab_instances", {
@@ -32,7 +32,7 @@ export const vocabInstances = sqliteTable("vocab_instances", {
     startIndex: int('start_index'),
     endIndex: int('end_index'),
     citation: text().notNull().unique(),
-    vocabId: int('vocab_id').notNull().references(() => vocab.id),
+    vocabId: int('vocab_id').notNull().references( () => vocab.id),
     userId: int('user_id').references(() => usersTable.id)
 });
 

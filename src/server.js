@@ -7,11 +7,16 @@ import userRouter from "./routes/users.router.js";
 import vocabRouter from "./routes/vocab.router.js";
 import instanceRouter from "./routes/instances.router.js";
 import commentRouter from "./routes/comments.router.js";
+import fileRouter from "./routes/files.router.js";
+import fileUpload from "express-fileupload";
 
 const app = express();
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:5173',
+    credentials: true
+}));
 app.use(cookieParser());
 
 app.get('/', (req, res) => {
@@ -19,11 +24,15 @@ app.get('/', (req, res) => {
 });
 
 app.use('/auth', authRouter);
+app.use(fileUpload());
+app.use('/files', fileRouter);
 app.use(verifyJWT);
 app.use('/users', userRouter);
 app.use('/vocab', vocabRouter);
 app.use('/instances', instanceRouter);
 app.use('/comments', commentRouter);
+
+
 
 
 

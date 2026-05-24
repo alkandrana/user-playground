@@ -7,8 +7,8 @@ import { getCurrentUser } from "../middleware/verifyJWT.js";
 const db = drizzle(process.env.DB_FILE_NAME);
 
 export const getAllVocab = async (req, res) => {
+    console.log("Fetching vocab:");
     const currentUser = await getCurrentUser(req, res);
-    console.log("Current user: ", currentUser);
     const vocabList = await db.select().from(vocab)
         .where(eq(vocab.userId, currentUser.id));
     return res.json(vocabList);
@@ -33,18 +33,29 @@ export const getOne = async (req, res) => {
 }
 
 export const create = async (req, res) => {
-    const newVocab = req.body;
-    if (!newVocab?.lemma || !newVocab.definition || !newVocab.languageId || !newVocab.pos) {
+    console.log("JSON data sent: ", req.body);
+    const { lemma, definition, languageId, pos } = req.body;
+    if (!lemma || !definition || !languageId || !pos) {
         return res.status(400).send({
             message: "Lemma, definition, languageId and pos are required fields."
         });
     }
     const currentUser = await getCurrentUser(req, res);
-    newVocab.userId = currentUser.id;
-    const response = await db.insert(vocab).values(newVocab);
-    if (response?.affectedRows > 0){
+    console.log("Retrieved current user: ", currentUser);
+    const newVocab = {
+        lemma,
+        definition,
+        languageId,
+        pos,
+        userId: currentUser.id,
+    };
+    console.log("Preparing to insert Vocab: ", newVocab);
+    const [response] = await db.insert(vocab).values(newVocab);
+    console.log(response);
+    if (response){
         return res.status(201).send({
             message: "Vocab successfully created",
+            data: response
         });
     } else {
         return res.status(500).send({
